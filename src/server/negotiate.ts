@@ -1,7 +1,7 @@
 /*
 
 negotiate.js -- this file is part of the licensedb.org server.
-copyright 2013 Kuno Woudt
+copyright 2012,2013 Kuno Woudt
 
 Licensed under the Apache License, Version 2.0 (the "License"); you
 may not use this file except in compliance with the License.  You may
@@ -16,40 +16,50 @@ implied.  See the License for the specific language governing
 permissions and limitations under the License.
 
 */
+///<reference path='../../upstream/typescript-node-definitions/node.d.ts' />
+///<reference path='../../upstream/typescript-node-definitions/underscore.d.ts' />
 
-var _ = require ('underscore');
-var fs = require ('fs');
-var url = require ('url');
+import _ = module('underscore');
+import fs = module('fs');
+import url = module('url');
+
+// var fs = require ('fs');
+
 var Negotiator = require ('negotiator');
-
 _.mixin(require('underscore.string').exports());
 
+class MimeType {
+    constructor(public type: string, public suffix: string) {}
+}
+
 var _types = _([
-    [ "text/html",           "html"   ],
-    [ "application/rdf+xml", "rdf"    ],
-    [ "application/json",    "json"   ],
-    [ "application/ld+json", "jsonld" ]
+    new MimeType ("text/html",           "html"  ),
+    new MimeType ("application/rdf+xml", "rdf"   ),
+    new MimeType ("application/json",    "json"  ),
+    new MimeType ("application/ld+json", "jsonld"),
 ]);
 
 var typemap = _types.reduce (function (memo, val) {
-    memo[val[0]] = val[1];
+    memo[val.type] = val.suffix;
     return memo;
 }, {});
 
-var available_types = _types.map (function (val) { return val[0]; });
-var base_location = {};
+var available_types = _types.map (function (val) { return val.type; });
 
-function error404 (response)
+var base_location: url.Url;
+
+function error404 (response): void
 {
     response.writeHead(404, {'Content-Type': 'text/plain'});
     response.end('Not Found\n');
 }
 
-exports.init = function (base_url) {
+export function init(base_url: string) {
     base_location = url.parse (base_url);
 };
 
-exports.content = function (request, response) {
+export function content(request, response): void
+{
     var negotiator = new Negotiator(request);
     var content_type = negotiator.preferredMediaType(available_types);
 

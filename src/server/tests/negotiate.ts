@@ -1,8 +1,11 @@
 
-var assert = require('assert');
-var main = require('../main');
+///<reference path='../../upstream/typescript-node-definitions/node.d.ts' />
 
-var redirect_test = function (mimetype, suffix) {
+import main = module('../main');
+
+var assert = require('assert');
+
+function redirect_test(mimetype: string, suffix: string) : void {
     var request = {
         url: 'https://licensedb.org/id/Apache-2',
         headers: { 'Accept': mimetype },
@@ -15,19 +18,18 @@ var redirect_test = function (mimetype, suffix) {
 
     var message = "Accept " + mimetype + " redirects to " + suffix;
 
-    assert.response (main.http, request, expected, message);
+    assert.response (main.server, request, expected, message);
 };
 
-
-exports['test 404'] = function () {
+export function test_404 () : void {
     assert.response(
-        main.http,
+        main.server,
         { url: 'https://licensedb.org/does/not/exist' },
         { status: 404 },
         "Non-existant url results in 404");
 };
 
-exports['test redirects'] = function () {
+export function test_redirects () : void {
     redirect_test( '*/*',                 'html'   );
     redirect_test( 'text/html',           'html'   );
     redirect_test( 'application/json',    'json'   );

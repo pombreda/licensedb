@@ -4,3 +4,5 @@ node_modules/
 /.build
 /data/CC-*.turtle
 /production.www
+src/server/*.js
+src/server/tests/*.js

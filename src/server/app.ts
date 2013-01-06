@@ -16,18 +16,18 @@ implied.  See the License for the specific language governing
 permissions and limitations under the License.
 
 */
+///<reference path='../../upstream/typescript-node-definitions/node.d.ts' />
 
-var http = require ('http');
-var negotiate = require ('./negotiate');
+export import http = module('http');
+import main = module('main');
 
-exports.server = function (base_url) {
+var base_url = process.argv[2] ? process.argv[2] : "";
 
-    negotiate.init (base_url);
+function app (port: number, hostname?: string) : void {
 
-    return function (request, response) {
-        negotiate.content (request, response);
-    };
-
+    console.log('Server running at http://127.0.0.1:' + port.toString () + '/');
+    http.createServer(main.listener(base_url)).listen(port, hostname);
 };
 
-exports.http = http.createServer (exports.server ('https://licensedb.org'));
+app (26553);
+

@@ -12,10 +12,15 @@ WEB_SOURCES = index.html license.html ns.html
 WEB_VERBATIM = licensedb.css favicon.ico licensedb.png
 WEB_TARGETS := $(addprefix www/,$(WEB_SOURCES) $(WEB_VERBATIM)) www/id/index.html www/jquery.js
 
-all: $(CC_DATA_TARGETS) $(WEB_TARGETS) $(TXT_TARGETS) $(JSON_TARGETS) $(JSONLD_TARGETS) $(RDF_TARGETS) $(RDFA_TARGETS) www/dl/license-database.tar.gz
+all: node_server $(CC_DATA_TARGETS) $(WEB_TARGETS) $(TXT_TARGETS) $(JSON_TARGETS) $(JSONLD_TARGETS) $(RDF_TARGETS) $(RDFA_TARGETS) www/dl/license-database.tar.gz
+
+.PHONY: node_server
 
 node_modules:
 	npm install
+
+node_server: | node_modules
+	$(MAKE) -C src/server
 
 www:
 	mkdir --parents www/id
@@ -97,6 +102,7 @@ clean:
 	rm -rf data/CC-*.turtle
 	rm -rf .build
 	rm -rf www
+	$(MAKE) -C src/server clean
 
 deploy: | all
 	@echo Deploying www to production.www

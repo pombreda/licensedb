@@ -1,3 +1,6 @@
 [submodule "upstream/creativecommons"]
 	path = upstream/creativecommons
 	url = git://code.creativecommons.org/license.rdf.git
+[submodule "upstream/typescript-node-definitions"]
+	path = upstream/typescript-node-definitions
+	url = git://github.com/soywiz/typescript-node-definitions.git
