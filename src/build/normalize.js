@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-var fs     = require ('fs');
-var Lazy   = require ("lazy");
-var _      = require ('underscore');
-var jsonld = require ('./jsonld');
+var fs       = require ('fs');
+var readline = require('readline');
+var _        = require ('underscore');
+var jsonld   = require ('./jsonld');
 
 _.mixin(require('underscore.string').exports());
 
@@ -93,8 +93,11 @@ function normalize (statements) {
 
 function main (quiet) {
 
-    new Lazy(process.stdin).lines.forEach(function(line) {
-
+    readline.createInterface ({
+        input: process.stdin,
+        output: process.stdout,
+        terminal: false
+    }).on('line', function(line) {
         var statements = [];
         try {
             statements = statements.concat (jsonld.parseNQuads (line.toString ()))
@@ -110,9 +113,8 @@ function main (quiet) {
         _.chain(normalize (statements)).map (jsonld.toNQuad).map (function (val) {
             process.stdout.write (val);
         });
+        process.stdin.resume();
     });
-
-    process.stdin.resume();
 };
 
 function usage () {
