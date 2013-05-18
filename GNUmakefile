@@ -10,7 +10,7 @@ TXT_TARGETS := $(addprefix www/id/,$(notdir $(wildcard upstream/plaintext/*)))
 
 WEB_SOURCES = index.html license.html ns.html
 WEB_VERBATIM = licensedb.css favicon.ico licensedb.png
-WEB_TARGETS := $(addprefix www/,$(WEB_SOURCES) $(WEB_VERBATIM)) www/id/index.html www/jquery.js
+WEB_TARGETS := $(addprefix www/,$(WEB_SOURCES) $(WEB_VERBATIM)) www/id/index.html www/jquery.js www/ns.rdf www/ns.ttl
 
 all: $(CC_DATA_TARGETS) $(WEB_TARGETS) $(TXT_TARGETS) $(JSON_TARGETS) $(JSONLD_TARGETS) $(RDF_TARGETS) $(RDFA_TARGETS) www/dl/license-database.tar.gz
 
@@ -37,6 +37,9 @@ upstream:
 	src/build/plaintext-odc.sh
 	src/build/rdf-gnu.sh
 	src/build/rdf-cc.sh
+
+site:
+	$(MAKE) -C src/site
 
 data/CC-%.turtle: src/build/turtle-cc.py | upstream
 	@src/build/turtle-cc.py
@@ -87,9 +90,16 @@ www/id/index.html: src/site/dbindex.php src/site/page.php $(JSON_TARGETS) | www 
 	@php src/site/dbindex.php > .build/indexpage.html
 	@php src/site/page.php .build/indexpage.html "../" > $@
 
-www/%.html: src/site/%.html src/site/page.php | www
+www/%.html: src/site/%.md src/site/page.php | www site
 	@echo Generating $@ web page
 	@php src/site/page.php $< "" > $@
+
+www/ns.rdf: src/site/ns.rdf | www site
+	@cp $< $@
+
+www/ns.ttl: src/site/ns.turtle | www site
+	@cp $< $@
+
 
 www/favicon.ico: src/site/favicon.ico | www; @cp $< $@
 www/licensedb.png: src/site/licensedb.png | www; @cp $< $@
@@ -100,6 +110,8 @@ clean:
 	rm -rf data/CC-*.turtle
 	rm -rf .build
 	rm -rf www
+	$(MAKE) -C src/site clean
+
 
 deploy: | all
 	@echo Deploying www to production.www

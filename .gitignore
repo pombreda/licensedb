@@ -4,3 +4,5 @@ node_modules/
 /.build
 /data/CC-*.turtle
 /production.www
+/src/site/ns.md
+/src/site/ns.rdf

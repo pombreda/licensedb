@@ -1,9 +1,11 @@
 <?php // -*- mode: html -*-
 
-$lines = file ($argv[1]);
+require_once ("markdown.php");
+
+$lines = file($argv[1]);
 $wwwroot = $argv[2];
 $title = array_shift ($lines);
-$content = join ("", $lines);
+$content = Markdown (join ("", $lines));
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
 "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
